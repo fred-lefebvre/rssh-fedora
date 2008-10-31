@@ -1,6 +1,6 @@
 Name:           rssh
 Version:        2.3.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Restricted shell for use with OpenSSH, allowing only scp and/or sftp
 Group:          Applications/Internet
 License:        BSD 
@@ -46,19 +46,6 @@ rm -rf %{buildroot}
 getent group rsshusers >/dev/null || groupadd -r rsshusers
 exit 0
 
-%post
-# Add rssh to the list of allowed shells in /etc/shells
-if ! grep %_bindir/rssh %_sysconfdir/shells >/dev/null; then
-        echo %_bindir/rssh >>%_sysconfdir/shells
-fi
-
-%postun
-# Remove rssh from the list of allowed shells in /etc/shells
-if [ "$1" = 0 ]; then
-        grep -v %_bindir/rssh %_sysconfdir/shells >%_sysconfdir/rssh.tmp
-        mv %_sysconfdir/rssh.tmp %_sysconfdir/shells
-fi
-
 
 %files
 %defattr(-, root, root, -)
@@ -72,6 +59,9 @@ fi
 
 
 %changelog
+* Thu Oct 30 2008 Ian Weller <ianweller@gmail.com> - 2.3.2-5
+- Remove pre and post scripts
+  - https://bugzilla.redhat.com/show_bug.cgi?id=456182#c17
 
 * Wed Aug 11 2008 Rahul Sundaram <sundaram@fedoraproject.org> - 2.3.2-4
 - Fix review issues and apply patch
