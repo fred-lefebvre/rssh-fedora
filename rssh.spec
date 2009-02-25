@@ -1,6 +1,6 @@
 Name:           rssh
 Version:        2.3.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Restricted shell for use with OpenSSH, allowing only scp and/or sftp
 Group:          Applications/Internet
 License:        BSD 
@@ -59,6 +59,9 @@ exit 0
 
 
 %changelog
+* Wed Feb 25 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.3.2-6
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_11_Mass_Rebuild
+
 * Thu Oct 30 2008 Ian Weller <ianweller@gmail.com> - 2.3.2-5
 - Remove pre and post scripts
   - https://bugzilla.redhat.com/show_bug.cgi?id=456182#c17
