@@ -1,13 +1,12 @@
 Name:           rssh
-Version:        2.3.2
-Release:        8%{?dist}
+Version:        2.3.3
+Release:        1%{?dist}
 Summary:        Restricted shell for use with OpenSSH, allowing only scp and/or sftp
 Group:          Applications/Internet
 License:        BSD 
 URL:            http://www.pizzashack.org/rssh/
 Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
 Patch0:         rssh-2.3.2-makefile.patch
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  openssh-server, openssh-clients
 BuildRequires:  cvs rsync rdist
@@ -48,7 +47,6 @@ exit 0
 
 
 %files
-%defattr(-, root, root, -)
 %doc AUTHORS ChangeLog CHROOT COPYING NEWS README SECURITY TODO
 %doc conf_convert.sh mkchroot.sh
 %doc %{_mandir}/man1/rssh.1*
@@ -59,6 +57,9 @@ exit 0
 
 
 %changelog
+* Thu May 19 2011 Rahul Sundaram <sundaram@fedoraproject.org> - 2.3.3-1
+- Upstream security fix release.  Resolves rhbz#705904
+
 * Wed Feb 09 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.3.2-8
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
 
