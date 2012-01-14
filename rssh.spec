@@ -1,6 +1,6 @@
 Name:           rssh
 Version:        2.3.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Restricted shell for use with OpenSSH, allowing only scp and/or sftp
 Group:          Applications/Internet
 License:        BSD 
@@ -57,6 +57,9 @@ exit 0
 
 
 %changelog
+* Sat Jan 14 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.3.3-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
+
 * Thu May 19 2011 Rahul Sundaram <sundaram@fedoraproject.org> - 2.3.3-1
 - Upstream security fix release.  Resolves rhbz#705904
 
