@@ -1,12 +1,13 @@
 Name:           rssh
 Version:        2.3.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Restricted shell for use with OpenSSH, allowing only scp and/or sftp
 Group:          Applications/Internet
 License:        BSD 
 URL:            http://www.pizzashack.org/rssh/
 Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
 Patch0:         rssh-2.3.2-makefile.patch
+Patch1:         rssh-2.3.3-rsync-protocol.patch
 
 BuildRequires:  openssh-server, openssh-clients
 BuildRequires:  cvs rsync rdist
@@ -24,6 +25,7 @@ access, you can use rssh to do that. It is a alternative to scponly.
 %prep
 %setup -q
 %patch0 -p1 -b .makefile
+%patch1 -p1 -b .rsync3
 
 chmod 644 conf_convert.sh
 chmod 644 mkchroot.sh
@@ -57,6 +59,9 @@ exit 0
 
 
 %changelog
+* Mon Feb  6 2012 Daniel Drake <dsd@laptop.org> - 2.3.3-3
+- Add patch for rsync3 compat (#485946)
+
 * Sat Jan 14 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.3.3-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
 
