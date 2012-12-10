@@ -1,13 +1,15 @@
 Name:           rssh
-Version:        2.3.3
-Release:        4%{?dist}
+Version:        2.3.4
+Release:        1%{?dist}
 Summary:        Restricted shell for use with OpenSSH, allowing only scp and/or sftp
 Group:          Applications/Internet
 License:        BSD 
 URL:            http://www.pizzashack.org/rssh/
 Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
-Patch0:         rssh-2.3.2-makefile.patch
-Patch1:         rssh-2.3.3-rsync-protocol.patch
+Source1:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz.sig
+Patch0:         rssh-2.3.4-makefile.patch
+Patch1:         rssh-2.3.4-rsync-protocol.patch
+Patch2:         rssh-2.3.4-command-line-error.patch
 
 BuildRequires:  openssh-server, openssh-clients
 BuildRequires:  cvs rsync rdist
@@ -15,7 +17,6 @@ Requires:       openssh-server
 Requires(pre):  shadow-utils
 
 %description
-
 rssh is a restricted shell for use with OpenSSH, allowing only scp
 and/or sftp. For example, if you have a server which you only want
 to allow users to copy files off of via scp, without providing shell
@@ -26,6 +27,7 @@ access, you can use rssh to do that. It is a alternative to scponly.
 %setup -q
 %patch0 -p1 -b .makefile
 %patch1 -p1 -b .rsync3
+%patch2 -p1 -b .cmdline-error
 
 chmod 644 conf_convert.sh
 chmod 644 mkchroot.sh
@@ -39,6 +41,9 @@ make %{?_smp_mflags}
 %install
 rm -rf %{buildroot}
 make install INSTALL="%{__install} -p" DESTDIR=%{buildroot}
+# since rssh 2.3.4, default config is installed as rssh.conf.default,
+# rename it for packaging in rpm
+mv %{buildroot}/%{_sysconfdir}/rssh.conf{.default,}
 
 %clean
 rm -rf %{buildroot}
@@ -59,6 +64,15 @@ exit 0
 
 
 %changelog
+* Mon Dec 10 2012 Tomas Hoger <thoger@fedoraproject.org> - 2.3.4-1
+- Update to upstream version 2.3.4, which fixes CVE-2012-3478 and CVE-2012-2252
+- Updated rsync-protocol.patch to fix CVE-2012-2251, and to apply on top of the
+  CVE-2012-3478 and CVE-2012-2252 fixes.
+- Updated makefile.patch to preserve RPM CFLAGS.
+- Added command-line-error.patch (from Debian), correcting error message
+  generated when insecure command line option is used (CVE-2012-3478 fix
+  regression).
+
 * Sat Jul 21 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.3.3-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
 
@@ -95,5 +109,4 @@ exit 0
 
 * Tue Jul 22 2008 Rahul Sundaram <sundaram@fedoraproject.org> - 2.3.2-1
 - initial spec
-
 
