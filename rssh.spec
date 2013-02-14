@@ -1,6 +1,6 @@
 Name:           rssh
 Version:        2.3.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Restricted shell for use with OpenSSH, allowing only scp and/or sftp
 Group:          Applications/Internet
 License:        BSD 
@@ -64,6 +64,9 @@ exit 0
 
 
 %changelog
+* Thu Feb 14 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.3.4-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
+
 * Mon Dec 10 2012 Tomas Hoger <thoger@fedoraproject.org> - 2.3.4-1
 - Update to upstream version 2.3.4, which fixes CVE-2012-3478 and CVE-2012-2252
 - Updated rsync-protocol.patch to fix CVE-2012-2251, and to apply on top of the
