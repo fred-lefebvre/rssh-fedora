@@ -45,9 +45,6 @@ make install INSTALL="%{__install} -p" DESTDIR=%{buildroot}
 # rename it for packaging in rpm
 mv %{buildroot}/%{_sysconfdir}/rssh.conf{.default,}
 
-%clean
-rm -rf %{buildroot}
-
 %pre
 getent group rsshusers >/dev/null || groupadd -r rsshusers
 exit 0
