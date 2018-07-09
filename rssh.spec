@@ -11,6 +11,7 @@ Patch0:         rssh-2.3.4-makefile.patch
 Patch1:         rssh-2.3.4-rsync-protocol.patch
 Patch2:         rssh-2.3.4-command-line-error.patch
 
+BuildRequires:  gcc
 BuildRequires:  openssh-server, openssh-clients
 BuildRequires:  cvs rsync rdist
 Requires:       openssh-server
