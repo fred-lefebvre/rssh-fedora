@@ -2,7 +2,6 @@ Name:           rssh
 Version:        2.3.4
 Release:        12%{?dist}
 Summary:        Restricted shell for use with OpenSSH, allowing only scp and/or sftp
-Group:          Applications/Internet
 License:        BSD 
 URL:            http://www.pizzashack.org/rssh/
 Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
