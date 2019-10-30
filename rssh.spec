@@ -1,33 +1,46 @@
 Name:           rssh
 Version:        2.3.4
-Release:        14%{?dist}
+Release:        15%{?dist}
 Summary:        Restricted shell for use with OpenSSH, allowing only scp and/or sftp
 License:        BSD 
 URL:            http://www.pizzashack.org/rssh/
 Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
 Source1:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz.sig
 Patch0:         rssh-2.3.4-makefile.patch
-Patch1:         rssh-2.3.4-rsync-protocol.patch
 Patch2:         rssh-2.3.4-command-line-error.patch
+# https://sourceforge.net/p/rssh/mailman/message/36536555/
+# CVE-2019-3463 CVE-2019-3464 007
+Patch3:         rssh-2.3.4-Verify-rsync-command-options.patch
+# https://sourceforge.net/p/rssh/mailman/message/36530715/
+# CVE-2019-1000018 009
+Patch4:         rssh-2.3.4-Verify-scp-command-options.patch
+# 010
+Patch5:         rssh-2.3.4-Check-command-line-after-chroot.patch
 
 BuildRequires:  gcc
-BuildRequires:  openssh-server, openssh-clients
-BuildRequires:  cvs rsync rdist
+BuildRequires:  openssh-server
+BuildRequires:  openssh-clients
+BuildRequires:  cvs
+BuildRequires:  rsync
+BuildRequires:  rdist
 Requires:       openssh-server
 Requires(pre):  shadow-utils
+
 
 %description
 rssh is a restricted shell for use with OpenSSH, allowing only scp
 and/or sftp. For example, if you have a server which you only want
 to allow users to copy files off of via scp, without providing shell
-access, you can use rssh to do that. It is a alternative to scponly. 
+access, you can use rssh to do that. It is a alternative to scponly.
 
 
 %prep
 %setup -q
 %patch0 -p1 -b .makefile
-%patch1 -p1 -b .rsync3
 %patch2 -p1 -b .cmdline-error
+%patch3 -p1 -b .rsync_opts
+%patch4 -p1 -b .scp_opts
+%patch5 -p1 -b .chroot_cmd
 
 chmod 644 conf_convert.sh
 chmod 644 mkchroot.sh
@@ -35,15 +48,15 @@ chmod 644 mkchroot.sh
 
 %build
 %configure
-make %{?_smp_mflags}
+%make_build
 
 
 %install
-rm -rf %{buildroot}
-make install INSTALL="%{__install} -p" DESTDIR=%{buildroot}
+%make_install
 # since rssh 2.3.4, default config is installed as rssh.conf.default,
 # rename it for packaging in rpm
 mv %{buildroot}/%{_sysconfdir}/rssh.conf{.default,}
+
 
 %pre
 getent group rsshusers >/dev/null || groupadd -r rsshusers
@@ -51,16 +64,21 @@ exit 0
 
 
 %files
-%doc AUTHORS ChangeLog CHROOT COPYING NEWS README SECURITY TODO
+%license COPYING
+%doc AUTHORS ChangeLog CHROOT NEWS README SECURITY TODO
 %doc conf_convert.sh mkchroot.sh
-%doc %{_mandir}/man1/rssh.1*
-%doc %{_mandir}/man5/rssh.conf.5*
+%{_mandir}/man1/rssh.1*
+%{_mandir}/man5/rssh.conf.5*
 %config(noreplace) %{_sysconfdir}/rssh.conf
 %attr(750, root, rsshusers) %{_bindir}/rssh
 %attr(4750, root, rsshusers) %{_libexecdir}/rssh_chroot_helper
 
 
 %changelog
+* Wed Oct 30 2019 Xavier Bachelot <xavier@bachelot.org> - 2.3.4-15
+- Clean up specfile.
+- Add patches for CVE-2019-3463, CVE-2019-3464 and CVE-2019-1000018.
+
 * Fri Jul 26 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2.3.4-14
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
 
@@ -134,10 +152,10 @@ exit 0
 - Remove pre and post scripts
   - https://bugzilla.redhat.com/show_bug.cgi?id=456182#c17
 
-* Wed Aug 11 2008 Rahul Sundaram <sundaram@fedoraproject.org> - 2.3.2-4
+* Mon Aug 11 2008 Rahul Sundaram <sundaram@fedoraproject.org> - 2.3.2-4
 - Fix review issues and apply patch
 
-* Wed Aug 07 2008 Rahul Sundaram <sundaram@fedoraproject.org> - 2.3.2-3
+* Thu Aug 07 2008 Rahul Sundaram <sundaram@fedoraproject.org> - 2.3.2-3
 - Fix postun to remove rssh shell
 
 * Wed Jul 30 2008 Rahul Sundaram <sundaram@fedoraproject.org>  - 2.3.2-2
