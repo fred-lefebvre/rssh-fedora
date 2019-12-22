@@ -1,6 +1,6 @@
 Name:           rssh
 Version:        2.3.4
-Release:        15%{?dist}
+Release:        16%{?dist}
 Summary:        Restricted shell for use with OpenSSH, allowing only scp and/or sftp
 License:        BSD 
 URL:            http://www.pizzashack.org/rssh/
@@ -12,6 +12,7 @@ Patch2:         rssh-2.3.4-command-line-error.patch
 # CVE-2019-3463 CVE-2019-3464 007
 Patch3:         rssh-2.3.4-Verify-rsync-command-options.patch
 # https://sourceforge.net/p/rssh/mailman/message/36530715/
+# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=919623
 # CVE-2019-1000018 009
 Patch4:         rssh-2.3.4-Verify-scp-command-options.patch
 # 010
@@ -75,6 +76,9 @@ exit 0
 
 
 %changelog
+* Sat Dec 21 2019 Frederick Lefebvre <fredlef@amazon.com> - 2.3.4-16
+- Fix regression in patch for CVE-2019-1000018.
+
 * Wed Oct 30 2019 Xavier Bachelot <xavier@bachelot.org> - 2.3.4-15
 - Clean up specfile.
 - Add patches for CVE-2019-3463, CVE-2019-3464 and CVE-2019-1000018.

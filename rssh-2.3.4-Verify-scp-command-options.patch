@@ -16,21 +16,20 @@ first.
 
 Attempt to protect against this attack by checking the command line
 of scp and only allowing the options that are passed to the server
-end of the connection.  Specifically, do not allow multiple
-non-option arguments, which attempts to prevent causing the server
-to initiate an scp command.  (This will break scp -3 through rssh,
-which seems like an acceptable tradeoff.)
+end of the connection.  Require either -f or -t be given, which
+disables scp's attempts to connect to a remote host.  Allow these as
+-pf and -pt, which are sent by libssh2.
 
 Debian Bug#919623
 ---
- util.c | 46 ++++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 44 insertions(+), 2 deletions(-)
+ util.c | 44 ++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 42 insertions(+), 2 deletions(-)
 
 diff --git a/util.c b/util.c
-index 3ec01e1..6e668c9 100644
+index dc8c8fb..4203eac 100644
 --- a/util.c
 +++ b/util.c
-@@ -264,6 +264,45 @@ static int rsync_okay( char **vec )
+@@ -266,6 +266,43 @@ static int rsync_okay( char **vec )
  }
  
  
@@ -42,41 +41,39 @@ index 3ec01e1..6e668c9 100644
 + */
 +static int scp_okay( char **vec )
 +{
-+	int saw_file = FALSE;
-+	int saw_end  = FALSE;
++	int saw_f_or_t = FALSE;
 +
 +	for ( vec++; vec && *vec; vec++ ){
 +		/* Allowed options. */
-+		if ( !saw_end ) {
-+			if ( strcmp(*vec, "-v") == 0 ) continue;
-+			if ( strcmp(*vec, "-r") == 0 ) continue;
-+			if ( strcmp(*vec, "-p") == 0 ) continue;
-+			if ( strcmp(*vec, "-d") == 0 ) continue;
-+			if ( strcmp(*vec, "-f") == 0 ) continue;
-+			if ( strcmp(*vec, "-t") == 0 ) continue;
++		if ( strcmp(*vec, "-v") == 0 ) continue;
++		if ( strcmp(*vec, "-r") == 0 ) continue;
++		if ( strcmp(*vec, "-p") == 0 ) continue;
++		if ( strcmp(*vec, "-d") == 0 ) continue;
++		if ( strcmp(*vec, "-f") == 0 || strcmp(*vec, "-pf") == 0 ){
++			saw_f_or_t = TRUE;
++			continue;
 +		}
-+
-+		/* End of arguments.  One more argument allowed after this. */
-+		if ( !saw_end && strcmp(*vec, "--") == 0 ){
-+			saw_end = TRUE;
++		if ( strcmp(*vec, "-t") == 0 || strcmp(*vec, "-pt") == 0 ){
++			saw_f_or_t = TRUE;
 +			continue;
 +		}
 +
-+		/* No other options allowed, but allow file starting with -. */
-+		if ( *vec[0] == '-' && !saw_end ) return FALSE;
-+		if ( saw_file ) return FALSE;
-+		saw_file = TRUE;
++		/* End of arguments. */
++		if ( strcmp(*vec, "--") == 0 ) break;
++
++		/* Any other argument is not allowed. */
++		if ( *vec[0] == '-' ) return FALSE;
 +	}
 +
-+	/* We must have seen a single file. */
-+	return saw_file;
++	/* Either -f or -t must have been given. */
++	return saw_f_or_t;
 +}
 +
 +
  /*
   * check_command_line() - take the command line passed to rssh, and verify
   *			  that the specified command is one the user is
-@@ -279,8 +318,11 @@ char *check_command_line( char **cl, ShellOptions_t *opts )
+@@ -281,8 +318,11 @@ char *check_command_line( char **cl, ShellOptions_t *opts )
  		return PATH_SFTP_SERVER;
  
  	if ( check_command(*cl, opts, PATH_SCP, RSSH_ALLOW_SCP) ){
